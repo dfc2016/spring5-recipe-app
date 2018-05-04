@@ -4,9 +4,13 @@ import guru.springframework.domain.*;
 import guru.springframework.repositories.CategoryRepository;
 import guru.springframework.repositories.RecipeRepository;
 import guru.springframework.repositories.UnitOfMeasureRepository;
+import guru.springframework.services.RecipeServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,6 +20,7 @@ import java.util.Optional;
 /**
  * Created by jt on 6/13/17.
  */
+@Slf4j
 @Component
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -30,7 +35,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     }
 
     @Override
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        log.debug("DFC >> RecipeBootstrap >> Save all recipes");
         recipeRepository.saveAll(getRecipes());
     }
 
@@ -82,6 +89,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         UnitOfMeasure dashUom = dashUomOptional.get();
         UnitOfMeasure pintUom = dashUomOptional.get();
         UnitOfMeasure cupsUom = cupsUomOptional.get();
+        
+        log.debug("DFC >> RecipeBootstrap >> test UOMs");
 
         //get Categories
         Optional<Category> americanCategoryOptional = categoryRepository.findByDescription("American");
@@ -98,6 +107,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
         Category americanCategory = americanCategoryOptional.get();
         Category mexicanCategory = mexicanCategoryOptional.get();
+        
+        log.debug("DFC >> RecipeBootstrap >> test Categories");
 
         //Yummy Guac
         Recipe guacRecipe = new Recipe();
@@ -144,6 +155,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
         //add to return list
         recipes.add(guacRecipe);
+        
+        log.debug("DFC >> RecipeBootstrap >> Set up Yummy Guac recipe");
 
         //Yummy Tacos
         Recipe tacosRecipe = new Recipe();
@@ -201,6 +214,9 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(mexicanCategory);
 
         recipes.add(tacosRecipe);
+        
+        log.debug("DFC >> RecipeBootstrap >> Set up Yummy Tacos recipe");
+        
         return recipes;
     }
 }
